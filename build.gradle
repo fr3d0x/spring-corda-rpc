@@ -1,0 +1,89 @@
+group 'com.mgiadigital.spring.gknledger'
+version '0.1'
+
+buildscript {
+    ext.kotlin_version = '1.2.0'
+    ext.spring_boot_version = '1.5.4.RELEASE'
+    ext.corda_release_version = '1.0.0'
+    ext.corda_gradle_plugins_version = '1.0.0'
+    ext.junit_version = '4.12'
+
+    repositories {
+        mavenLocal()
+        jcenter()
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlin_version" // See https://kotlinlang.org/docs/reference/compiler-plugins.html#kotlin-spring-compiler-plugin
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:$spring_boot_version"
+        classpath "net.corda.plugins:cordformation:$corda_gradle_plugins_version"
+        classpath "net.corda.plugins:quasar-utils:$corda_gradle_plugins_version"
+    }
+}
+
+apply plugin: 'kotlin'
+apply plugin: "kotlin-spring" // See https://kotlinlang.org/docs/reference/compiler-plugins.html#kotlin-spring-compiler-plugin
+apply plugin: 'org.springframework.boot'
+apply plugin: 'net.corda.plugins.cordformation'
+
+jar {
+    baseName = 'gkn-cordapp-rest-service'
+    version = '0.1.0'
+}
+
+repositories {
+    mavenLocal()
+    jcenter()
+    mavenCentral()
+    maven { url 'https://dl.bintray.com/kotlin/exposed' }
+    maven { url 'https://jitpack.io' }
+    maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-releases' }
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
+    compile("org.springframework.boot:spring-boot-starter-web") {
+        exclude module: "spring-boot-starter-logging"
+        exclude module: "logback-classic"
+    }
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+    // Corda integration dependencies
+    cordaCompile "net.corda:corda-core:$corda_release_version"
+    cordaCompile "net.corda:corda-finance:$corda_release_version"
+    cordaCompile "net.corda:corda-jackson:$corda_release_version"
+    cordaCompile "net.corda:corda-rpc:$corda_release_version"
+    cordaCompile "net.corda:corda-webserver-impl:$corda_release_version"
+    cordaRuntime "net.corda:corda:$corda_release_version"
+    cordaRuntime "net.corda:corda-webserver:$corda_release_version"
+    testCompile "net.corda:corda-node-driver:$corda_release_version"
+
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+task runGlobokasServer(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'net.corda.server.ServerKt'
+    environment "server.port", "8080"
+    environment "config.rpc.port", "10006"
+}
+
+task runEmpresaAServer(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'net.corda.server.ServerKt'
+    environment "server.port", "8081"
+    environment "config.rpc.port", "10009"
+}
+
+task runEmpresaBServer(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'net.corda.server.ServerKt'
+    environment "server.port", "8082"
+    environment "config.rpc.port", "10012"
+}

@@ -4,19 +4,21 @@ import org.springframework.stereotype.Component
 import net.corda.client.rpc.CordaRPCClient
 import net.corda.core.messaging.CordaRPCOps
 import net.corda.core.utilities.NetworkHostAndPort
+import net.corda.core.utilities.getOrThrow
 import org.springframework.beans.factory.annotation.Value
+import kotlin.concurrent.thread
 
-private const val CORDA_USER_NAME = "user1"
-private const val CORDA_USER_PASSWORD = "test"
-private const val CORDA_NODE_HOST = "localhost"
-private const val CORDA_RPC_PORT = "10006"
+private const val CORDA_USER_NAME = "config.rpc.username"
+private const val CORDA_USER_PASSWORD = "config.rpc.password"
+private const val CORDA_NODE_HOST = "config.rpc.host"
+private const val CORDA_RPC_PORT = "config.rpc.port"
 
 @Component
 class NodeRPCConnection(
-        @Value("localhost") host: String,
-        @Value("user1") username: String,
-        @Value("test") password: String,
-        @Value("10006") rpcPort: Int) {
+        @Value("\${$CORDA_NODE_HOST}") host: String,
+        @Value("\${$CORDA_USER_NAME}") username: String,
+        @Value("\${$CORDA_USER_PASSWORD}") password: String,
+        @Value("\${$CORDA_RPC_PORT}") rpcPort: Int) {
 
     val proxy: CordaRPCOps
 
@@ -25,5 +27,6 @@ class NodeRPCConnection(
         val rpcClient = CordaRPCClient(rpcAddress)
         val rpcConnection = rpcClient.start(username, password)
         proxy = rpcConnection.proxy
+        proxy.waitUntilNetworkReady().getOrThrow()
     }
 }

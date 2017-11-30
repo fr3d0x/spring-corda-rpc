@@ -69,21 +69,21 @@ compileTestKotlin {
 
 task runGlobokasServer(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
-    main = 'net.corda.server.ServerKt'
+    main = 'com.gknledger.pack.MainKt'
     environment "server.port", "8080"
     environment "config.rpc.port", "10006"
 }
 
 task runEmpresaAServer(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
-    main = 'net.corda.server.ServerKt'
+    main = 'com.gknledger.pack.MainKt'
     environment "server.port", "8081"
     environment "config.rpc.port", "10009"
 }
 
 task runEmpresaBServer(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
-    main = 'net.corda.server.ServerKt'
+    main = 'com.gknledger.pack.MainKt'
     environment "server.port", "8082"
     environment "config.rpc.port", "10012"
 }

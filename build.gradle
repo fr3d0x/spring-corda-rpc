@@ -27,11 +27,6 @@ apply plugin: "kotlin-spring" // See https://kotlinlang.org/docs/reference/compi
 apply plugin: 'org.springframework.boot'
 apply plugin: 'net.corda.plugins.cordformation'
 
-jar {
-    baseName = 'gkn-cordapp-rest-service'
-    version = '0.1.0'
-}
-
 repositories {
     mavenLocal()
     jcenter()
